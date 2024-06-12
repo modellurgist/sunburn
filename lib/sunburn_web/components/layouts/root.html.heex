@@ -7,11 +7,16 @@
     <.live_title suffix=" · Phoenix Framework">
       <%= assigns[:page_title] || "Sunburn" %>
     </.live_title>
-    <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
-    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
-    </script>
+    <LiveVue.Reload.vite_assets assets={["/js/app.js", "/css/app.css"]}>
+      <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
+      <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
+      </script>
+    </LiveVue.Reload.vite_assets>
   </head>
   <body class="bg-white antialiased">
     <%= @inner_content %>
+
+    <!-- Wrap existing CSS and JS in LiveVue.Reload.vite_assets component,
+    pass paths to original files in assets -->
   </body>
 </html>

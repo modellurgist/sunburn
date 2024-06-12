@@ -46,6 +46,7 @@ defmodule Sunburn.MixProject do
        compile: false,
        depth: 1},
       {:jason, "~> 1.2"},
+      {:live_vue, "~> 0.3"},
       {:phoenix, "~> 1.7.12"},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 4.0"},
@@ -56,10 +57,8 @@ defmodule Sunburn.MixProject do
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       # dev / test
-      {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
       {:floki, ">= 0.30.0", only: :test},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:tailwind, "~> 0.2", runtime: Mix.env() == :dev}
+      {:phoenix_live_reload, "~> 1.2", only: :dev}
     ]
   end
 
@@ -75,11 +74,14 @@ defmodule Sunburn.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["tailwind sunburn", "esbuild sunburn"],
+      "assets.setup": ["cmd --cd assets npm install"],
+      "assets.build": [
+        "cmd --cd assets npm run build",
+        "cmd --cd assets npm run build-server"
+      ],
       "assets.deploy": [
-        "tailwind sunburn --minify",
-        "esbuild sunburn --minify",
+        "cmd --cd assets npm run build",
+        "cmd --cd assets npm run build-server",
         "phx.digest"
       ]
     ]

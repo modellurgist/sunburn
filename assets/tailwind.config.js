@@ -9,7 +9,10 @@ module.exports = {
   content: [
     "./js/**/*.js",
     "../lib/sunburn_web.ex",
-    "../lib/sunburn_web/**/*.*ex"
+    "../lib/sunburn_web/**/*.*ex",
+    // include Vue files
+    "./vue/**/*.vue",
+    "../lib/**/*.vue",
   ],
   theme: {
     extend: {

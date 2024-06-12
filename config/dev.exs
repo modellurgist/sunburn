@@ -1,5 +1,11 @@
 import Config
 
+config :live_vue,
+  vite_host: "http://localhost:5173",
+  ssr_module: LiveVue.SSR.ViteJS,
+  # if you want to disable SSR by default, make it false
+  ssr: true
+
 # Configure your database
 config :sunburn, Sunburn.Repo,
   username: "postgres",
@@ -25,8 +31,19 @@ config :sunburn, SunburnWeb.Endpoint,
   debug_errors: true,
   secret_key_base: "s1amRKaJyXRUca2nmhSbsmRUXba6kiHDt9iSVy5XB0BD3l/ZbphSuiGNOjp63WiD",
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:sunburn, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:sunburn, ~w(--watch)]}
+    npm: ["run", "dev", cd: Path.expand("../assets", __DIR__)]
+  ],
+  live_reload: [
+    notify: [
+      live_view: [
+        ~r"lib/sunburn_web/core_components.ex$",
+        ~r"lib/sunburn_web/(live|components)/.*(ex|heex)$"
+      ]
+    ],
+    patterns: [
+      ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
+      ~r"lib/sunburn_web/controllers/.*(ex|heex)$"
+    ]
   ]
 
 # ## SSL Support
