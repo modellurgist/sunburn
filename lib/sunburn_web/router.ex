@@ -17,7 +17,7 @@ defmodule SunburnWeb.Router do
   scope "/", SunburnWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    live "/", Dashboard
   end
 
   # Other scopes may use custom stacks.
