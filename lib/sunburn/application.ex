@@ -8,11 +8,11 @@ defmodule Sunburn.Application do
   @impl true
   def start(_type, _args) do
     children = [
+      {NodeJS.Supervisor, [path: LiveVue.SSR.NodeJS.server_path(), pool_size: 4]},
       SunburnWeb.Telemetry,
       Sunburn.Repo,
       {DNSCluster, query: Application.get_env(:sunburn, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Sunburn.PubSub},
-      {NodeJS.Supervisor, [path: LiveVue.SSR.NodeJS.server_path(), pool_size: 4]},
       # Start the Finch HTTP client for sending emails
       {Finch, name: Sunburn.Finch},
       # Start a worker by calling: Sunburn.Worker.start_link(arg)

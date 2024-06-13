@@ -3,18 +3,37 @@ defmodule SunburnWeb.Dashboard do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, :count, 0)}
+    values = [
+      %{key: "0", leaf: true, label: "Item 0", data: %{name: "Item 0"}, children: []}
+    ]
+
+    socket =
+      socket
+      |> assign(:count, 0)
+      |> assign(:values, values)
+
+    {:ok, socket}
   end
 
   @impl true
   def render(assigns) do
     ~H"""
-    <.vue
-      count={@count}
-      v-component="Counter"
-      v-socket={@socket}
-      v-on:inc={JS.push("inc")}
-    />
+    <div class="flex">
+      <.vue
+        v-component="Counter"
+        v-ssr={true}
+        v-socket={@socket}
+        count={@count}
+        v-on:inc={JS.push("inc")}
+      />
+
+      <.vue
+        v-component="Tree"
+        v-ssr={true}
+        v-socket={@socket}
+        values={@values}
+      />
+    </div>
     """
   end
 

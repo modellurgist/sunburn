@@ -21,21 +21,57 @@ import "phoenix_html"
 import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "topbar"
-import {getHooks, initializeVueApp} from "live_vue"
+// import {getHooks, initializeVueApp} from "live_vue"
+import {getHooks} from "live_vue"
 import components from "../vue"
 import "../css/app.css"
 import "vite/modulepreload-polyfill"
+
+// PrimeVue setup and components
+// import 'primevue/resources/themes/tailwind-light/theme.css'
 import PrimeVue from "primevue/config"
+import Tree from 'primevue/tree';
+// import TreeTable from 'primevue/treetable';
+// import Column from 'primevue/column';
+
+import {h} from "vue"
+
+const initializeVueApp = ({createApp, component, props, slots, plugin, el}) => {
+  const renderFn = () => h(component, props, slots)
+  const app = createApp({render: renderFn})
+  app.use(plugin)
+
+  // Initialize additional plugins
+  // - primevue
+  const primeVueOptions = {unstyled: true}
+  console.log("PrimeVue")
+  console.log(PrimeVue)
+  app.use(PrimeVue, primeVueOptions)
+
+  // Register components
+  // TreeTable takes array of TreeNode's as value (https://primevue.org/tree/#api.treenode)
+  // - see source code for that page here: https://github.com/primefaces/primevue/blob/master/apps/showcase/pages/treetable/index.vue
+  //   and here: https://github.com/primefaces/primevue/blob/master/apps/showcase/doc/treetable/BasicDoc.vue
+  //   and full data here: https://github.com/primefaces/primevue/blob/master/apps/showcase/service/NodeService.js#L71
+  // - might, instead, need to import explicitly in assets/vue/index.js
+  // - see also https://stackoverflow.com/questions/67745052/how-can-i-render-primevue-tree-items-as-links
+     
+  app.component('Tree', Tree)
+  // app.component('TreeTable', TreeTable)
+  // app.component('Column', Column)
+
+  console.log("app")
+  console.log(app)
+
+  app.mount(el)
+  return app
+}
 
 const initializeApp = context => {
   // initializeVueApp is a default function creating and initializing LiveVue App
   //
   // Can also customize by rolling own function for this (see https://github.com/Valian/live_vue/commit/5240979d091fcbbb06aa5b128dddb545e9c67b6d#diff-b335630551682c19a781afebcf4d07bf978fb1f8ac04c6bf87428ed5106870f5R324)
   const app = initializeVueApp(context)
-
-  // Initialize additional plugins
-  // - primevue
-  app.use(PrimeVue)
 
   return app
 }

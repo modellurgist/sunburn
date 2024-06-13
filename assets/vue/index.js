@@ -13,6 +13,12 @@ import "vite/modulepreload-polyfill";
 // I'd recommend using option 1 in `v-component` wherever possible, and fallback to option 2 if needed.
 
 export default {
+  // 1. components from libraries
+  // ...import.meta.glob('../node_modules/primevue/column/*.vue', { eager: true }),
+  // ...import.meta.glob('../node_modules/primevue/treetable/*.vue', { eager: true }),
+  ...import.meta.glob('../node_modules/primevue/tree/*.vue', { eager: true }),
+
+  // 2. components in this app
   // eager: true disables lazy loading - all these components will be part of the app.js bundle
   ...import.meta.glob('./**/*.vue', { eager: true }),
   ...import.meta.glob('../../lib/**/*.vue')
