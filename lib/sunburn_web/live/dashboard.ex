@@ -1,6 +1,8 @@
 defmodule SunburnWeb.Dashboard do
   use SunburnWeb, :live_view
 
+  alias SunburnWeb.StatsCard
+
   @impl true
   def mount(_params, _session, socket) do
     values = [
@@ -18,21 +20,18 @@ defmodule SunburnWeb.Dashboard do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="flex">
-      <.vue
-        v-component="Counter"
-        v-ssr={true}
-        v-socket={@socket}
-        count={@count}
-        v-on:inc={JS.push("inc")}
-      />
-
-      <.vue
-        v-component="Tree"
-        v-ssr={true}
-        v-socket={@socket}
-        values={@values}
-      />
+    <div class="w-full grid grid-cols-11">
+      <div class="col-start-5 col-span-3">
+        <StatsCard.component
+          headline="Successful conversions"
+          status={:good}
+          value={95.0}
+          value_units="%"
+          change_direction={:positive}
+          change_value={5.6}
+          change_units="%"
+        />
+      </div>
     </div>
     """
   end

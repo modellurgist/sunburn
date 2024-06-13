@@ -21,6 +21,7 @@
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "phoenix_live_view": "file:../deps/phoenix_live_view",
+    "preline": "^2.3.0",
     "primevue": "^3.52.0",
     "topbar": "^2.0.2",
     "vue": "^3.4.27"

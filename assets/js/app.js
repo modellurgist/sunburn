@@ -26,6 +26,7 @@ import {getHooks} from "live_vue"
 import components from "../vue"
 import "../css/app.css"
 import "vite/modulepreload-polyfill"
+import "preline/preline"
 
 // PrimeVue setup and components
 // import 'primevue/resources/themes/tailwind-light/theme.css'

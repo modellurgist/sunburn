@@ -13,6 +13,8 @@ module.exports = {
     // include Vue files
     "./vue/**/*.vue",
     "../lib/**/*.vue",
+    // Preline
+    './node_modules/preline/preline.js',
   ],
   theme: {
     extend: {
@@ -23,6 +25,8 @@ module.exports = {
   },
   plugins: [
     require("@tailwindcss/forms"),
+    // Preline
+    require('preline/plugin'),
     // Allows prefixing tailwind classes with LiveView classes to add rules
     // only when LiveView classes are applied, for example:
     //

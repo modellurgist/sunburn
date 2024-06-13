@@ -12,9 +12,27 @@
       <script phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
       </script>
     </LiveVue.Reload.vite_assets>
+    <script setup>
+      import { onMounted } from 'vue';
+      import { type IStaticMethods } from "preline/preline";
+
+      declare global {
+        interface Window {
+          HSStaticMethods: IStaticMethods;
+        }
+      }
+
+      onMounted(() => {
+        setTimeout(() => {
+          window.HSStaticMethods.autoInit();
+        }, 100)
+      });
+    </script>
   </head>
   <body class="bg-white antialiased">
-    <%= @inner_content %>
+    <div class="w-full pt-10 px-8">
+      <%= @inner_content %>
+    </div>
 
     <!-- Wrap existing CSS and JS in LiveVue.Reload.vite_assets component,
     pass paths to original files in assets -->
