@@ -32,18 +32,6 @@ config :sunburn, SunburnWeb.Endpoint,
   secret_key_base: "s1amRKaJyXRUca2nmhSbsmRUXba6kiHDt9iSVy5XB0BD3l/ZbphSuiGNOjp63WiD",
   watchers: [
     npm: ["run", "dev", cd: Path.expand("../assets", __DIR__)]
-  ],
-  live_reload: [
-    notify: [
-      live_view: [
-        ~r"lib/sunburn_web/core_components.ex$",
-        ~r"lib/sunburn_web/(live|components)/.*(ex|heex)$"
-      ]
-    ],
-    patterns: [
-      ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
-      ~r"lib/sunburn_web/controllers/.*(ex|heex)$"
-    ]
   ]
 
 # ## SSL Support
@@ -72,10 +60,16 @@ config :sunburn, SunburnWeb.Endpoint,
 # Watch static and templates for browser reloading.
 config :sunburn, SunburnWeb.Endpoint,
   live_reload: [
+    notify: [
+      live_view: [
+        ~r"lib/sunburn_web/core_components.ex$",
+        ~r"lib/sunburn_web/(live|components)/.*(ex|heex)$"
+      ]
+    ],
     patterns: [
       ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
-      ~r"lib/sunburn_web/(controllers|live|components)/.*(ex|heex)$"
+      ~r"lib/sunburn_web/controllers/.*(ex|heex)$"
     ]
   ]
 

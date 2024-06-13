@@ -35,3 +35,8 @@ sunburn-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# Ignore automatically generated Vue files by the ~V sigil
+/assets/vue/_build/
+
+# Ignore ssr build for vue.
+/priv/vue/

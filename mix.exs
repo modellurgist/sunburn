@@ -46,7 +46,7 @@ defmodule Sunburn.MixProject do
        compile: false,
        depth: 1},
       {:jason, "~> 1.2"},
-      {:live_vue, "~> 0.3"},
+      {:live_vue, "~> 0.4"},
       {:phoenix, "~> 1.7.12"},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 4.0"},

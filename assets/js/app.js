@@ -21,15 +21,33 @@ import "phoenix_html"
 import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "topbar"
-import {getHooks} from "live_vue"
+import {getHooks, initializeVueApp} from "live_vue"
 import components from "../vue"
 import "../css/app.css"
+import "vite/modulepreload-polyfill"
+import PrimeVue from "primevue/config"
+
+const initializeApp = context => {
+  // initializeVueApp is a default function creating and initializing LiveVue App
+  //
+  // Can also customize by rolling own function for this (see https://github.com/Valian/live_vue/commit/5240979d091fcbbb06aa5b128dddb545e9c67b6d#diff-b335630551682c19a781afebcf4d07bf978fb1f8ac04c6bf87428ed5106870f5R324)
+  const app = initializeVueApp(context)
+
+  // Initialize additional plugins
+  // - primevue
+  app.use(PrimeVue)
+
+  return app
+}
+
+const hooks = getHooks(components, {initializeApp})
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
+
 let liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: {_csrf_token: csrfToken},
-  hooks: getHooks(components)
+  hooks: hooks
 })
 
 // Show progress bar on live navigation and form submits
