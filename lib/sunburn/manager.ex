@@ -26,16 +26,20 @@ defmodule Sunburn.Manager do
 
     # - Instantaneous
     Components.CompanyTotalDeliveredPower.add(company_uuid, 0.0)
+    Components.CompanyMaximumPower.add(company_uuid, 0.0)
 
     # - Rolling 30-day (TODO)
 
     for site_id <- 1..1 do
       site_uuid = Ecto.UUID.generate()
 
-      # Aggregated values
-      Components.CompanyTotalDeliveredPower.add(site_uuid, 0.0)
+      Components.CompanySite.add(company_uuid, site_uuid)
 
-      site = @site_locations[site_id - 1]
+      # Aggregated values
+      Components.SiteTotalDeliveredPower.add(site_uuid, 0.0)
+      Components.SiteMaximumPower.add(site_uuid, 0.0)
+
+      site = Enum.at(@site_locations, site_id - 1)
 
       # Create site components
 
@@ -46,6 +50,7 @@ defmodule Sunburn.Manager do
       Components.SiteLatitude.add(site_uuid, site.latitude)
       Components.SiteLongitude.add(site_uuid, site.longitude)
       # - panels (via search of ... for this site)
+
       # - hardware/transmission:
       #   - ... TODO
 
@@ -87,24 +92,27 @@ defmodule Sunburn.Manager do
   # Declare all valid Component types
   def components do
     [
-      Sunburn.Components.PanelTotalDeliveredPower,
-      Sunburn.Components.SiteTotalDeliveredPower,
-      Sunburn.Components.CompanyTotalDeliveredPower,
-      Sunburn.Components.SiteZipCode,
+      Sunburn.Components.CompanySite,
+      Components.CompanyTotalDeliveredPower,
+      Components.CompanyMaximumPower,
+      Components.SiteZipCode,
       Components.SiteCity,
       Components.SiteState,
       Components.SiteLatitude,
       Components.SiteLongitude,
+      Components.SiteTotalDeliveredPower,
       Components.SiteSolarRadiationPerDay,
+      Components.SiteMaximumPower,
       Components.PanelSite,
-      Components.PanelPowerCapacity
+      Components.PanelPowerCapacity,
+      Components.PanelTotalDeliveredPower
     ]
   end
 
   # Declare all Systems to run
   def systems do
     [
-      # MyApp.Systems.SampleSystem
+      Sunburn.Systems.DaySampler
     ]
   end
 end

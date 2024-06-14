@@ -11,7 +11,6 @@ defmodule SunburnWeb.Dashboard do
 
     socket =
       socket
-      |> assign(:count, 0)
       |> assign(:values, values)
 
     {:ok, socket}
@@ -34,10 +33,5 @@ defmodule SunburnWeb.Dashboard do
       </div>
     </div>
     """
-  end
-
-  @impl true
-  def handle_event("inc", %{"value" => diff}, socket) do
-    {:noreply, update(socket, :count, &(&1 + diff))}
   end
 end
