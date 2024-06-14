@@ -13,7 +13,7 @@ defmodule Sunburn.Manager do
   end
 
   @site_locations [
-    %{city: "Valparaiso", state: "IN", latitude: 41.45, longitude: -87.10}
+    %{zip_5: 46383, city: "Valparaiso", state: "IN", latitude: 41.45, longitude: -87.10}
   ]
 
   def startup do
@@ -21,47 +21,63 @@ defmodule Sunburn.Manager do
     # on every subsequent app restart
 
     company_uuid = Ecto.UUID.generate()
-    # aggregate stats
-    # - instantaneous
-    # - rolling 30-day
+
+    # Aggregated values
+
+    # - Instantaneous
+    Components.CompanyTotalDeliveredPower.add(company_uuid, 0.0)
+
+    # - Rolling 30-day (TODO)
 
     for site_id <- 1..1 do
       site_uuid = Ecto.UUID.generate()
 
+      # Aggregated values
+      Components.CompanyTotalDeliveredPower.add(site_uuid, 0.0)
+
       site = @site_locations[site_id - 1]
 
-      # create site components - TODO
-      # * fixed
+      # Create site components
+
+      # * Fixed attributes
       Components.SiteCity.add(site_uuid, site.city)
       Components.SiteState.add(site_uuid, site.state)
+      Components.SiteZipCode.add(site_uuid, site.zip_5)
       Components.SiteLatitude.add(site_uuid, site.latitude)
       Components.SiteLongitude.add(site_uuid, site.longitude)
-      # * variable
+      # - panels (via search of ... for this site)
+      # - hardware/transmission:
+      #   - ... TODO
+
+      # * Variable attributes
       #   - local time
       #   - sun up/down **
       #   - sun position
-      # - panels (via search of ... for this site)
-      # - aggregated values from its panels' components
-      # - hardware/transmission:
-      #   - ... TODO
-      # Site.Components.SunUp.add(site_uuid, true)
-      # (insolation, in kW*h/m2 per day, where panels are rated in Watts at 1.0 kW/m2 of insolation)
+      #   - solar radiation (insolation)
+      #     (insolation, in kW*h/m2 per day, where panels
+      #      are rated in Watts at 1.0 kW/m2 of insolation)
       Components.SiteSolarRadiationPerDay.add(site_uuid, 3.94)
 
-      for solar_panel_id < 1..15 do
+      # * aggregated values from its panels' components
+      # Site.Components.SunUp.add(site_uuid, true)
+
+      for _solar_panel_id <- 1..15 do
         panel_uuid = Ecto.UUID.generate()
 
-        # See https://pvwatts.nrel.gov/pvwatts.php for estimating power at location
+        # Create panel components
 
-        # create panel components - TODO
-        # - site **
+        # - Site
         Components.PanelSite.add(panel_uuid, site_uuid)
-        # - performance specs:
-        #   - ... TODO
+
+        # - Performance specs:
+
         # Power Capacity (in kiloWatts, technically per 1.0 kW/m2 of insolation)
         Components.PanelPowerCapacity.add(panel_uuid, 0.35)
-        # - hardware/transmission:
-        #   - ... TODO
+
+        # See https://pvwatts.nrel.gov/pvwatts.php for estimating power at location
+        Components.PanelTotalDeliveredPower.add(panel_uuid, 0.0)
+
+        # - hardware/transmission (TODO):
       end
     end
 
@@ -71,6 +87,10 @@ defmodule Sunburn.Manager do
   # Declare all valid Component types
   def components do
     [
+      Sunburn.Components.PanelTotalDeliveredPower,
+      Sunburn.Components.SiteTotalDeliveredPower,
+      Sunburn.Components.CompanyTotalDeliveredPower,
+      Sunburn.Components.SiteZipCode,
       Components.SiteCity,
       Components.SiteState,
       Components.SiteLatitude,
