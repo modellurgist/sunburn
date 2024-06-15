@@ -28,12 +28,15 @@ defmodule Sunburn.Manager do
     Components.CompanyTotalDeliveredPower.add(company_uuid, 0.0)
     Components.CompanyMaximumPower.add(company_uuid, 0.0)
 
+    # Comparative values over time
+    Components.CompanyChangeInTotalDeliveredPower.add(company_uuid, 0.0)
+
     # - Rolling 30-day (TODO)
 
     for site_id <- 1..1 do
       site_uuid = Ecto.UUID.generate()
 
-      Components.CompanySite.add(company_uuid, site_uuid)
+      Components.SiteCompany.add(site_uuid, company_uuid)
 
       # Aggregated values
       Components.SiteTotalDeliveredPower.add(site_uuid, 0.0)
@@ -92,9 +95,10 @@ defmodule Sunburn.Manager do
   # Declare all valid Component types
   def components do
     [
-      Sunburn.Components.CompanySite,
+      Components.CompanyChangeInTotalDeliveredPower,
       Components.CompanyTotalDeliveredPower,
       Components.CompanyMaximumPower,
+      Components.SiteCompany,
       Components.SiteZipCode,
       Components.SiteCity,
       Components.SiteState,
