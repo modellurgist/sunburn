@@ -8,6 +8,7 @@ defmodule Sunburn.Systems.DaySampler do
     CompanyTotalDeliveredPower,
     CompanyMaximumPower,
     CompanyChangeInTotalDeliveredPower,
+    CompanyTotalDeliveredPowerEfficiency,
     SiteCompany,
     # SiteZipCode,
     # SiteCity,
@@ -83,37 +84,34 @@ defmodule Sunburn.Systems.DaySampler do
     previous_delivered_power =
       CompanyTotalDeliveredPower.get(company_uuid) |> Decimal.from_float()
 
-    previous_maximum_power = CompanyMaximumPower.get(company_uuid) |> Decimal.from_float()
-
     current_delivered_power =
       Enum.map(sites_data, & &1.delivered_power) |> Enum.sum() |> Decimal.from_float()
+
+    delivered_power_change = Decimal.sub(current_delivered_power, previous_delivered_power)
 
     current_maximum_power =
       Enum.map(sites_data, & &1.maximum_power) |> Enum.sum() |> Decimal.from_float()
 
-    denominator = Decimal.sub(current_maximum_power, previous_maximum_power)
-
-    delivered_power_change_percent =
-      if Decimal.equal?(denominator, 0) do
-        denominator
+    delivered_power_efficiency =
+      if Decimal.equal?(current_maximum_power, 0) do
+        current_maximum_power
       else
-        Decimal.div(
-          Decimal.sub(current_delivered_power, previous_delivered_power),
-          denominator
-        )
-        |> Decimal.round(2)
+        current_delivered_power
+        |> Decimal.div(current_maximum_power)
       end
 
     data =
       %{
-        maximum_power: current_maximum_power |> Decimal.to_float(),
-        delivered_power: current_delivered_power |> Decimal.to_float(),
-        delivered_power_change: delivered_power_change_percent |> Decimal.to_float()
+        maximum_power: current_maximum_power |> Decimal.round(2) |> Decimal.to_float(),
+        delivered_power: current_delivered_power |> Decimal.round(2) |> Decimal.to_float(),
+        delivered_power_change: delivered_power_change |> Decimal.round(2) |> Decimal.to_float(),
+        delivered_power_efficiency: delivered_power_efficiency |> Decimal.round(2) |> Decimal.to_float()
       }
 
     CompanyTotalDeliveredPower.update(company_uuid, data.delivered_power)
     CompanyMaximumPower.update(company_uuid, data.maximum_power)
     CompanyChangeInTotalDeliveredPower.update(company_uuid, data.delivered_power_change)
+    CompanyTotalDeliveredPowerEfficiency.update(company_uuid, data.delivered_power_efficiency)
 
     :ok
   end

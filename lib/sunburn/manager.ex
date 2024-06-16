@@ -27,6 +27,7 @@ defmodule Sunburn.Manager do
     # - Instantaneous
     Components.CompanyTotalDeliveredPower.add(company_uuid, 0.0)
     Components.CompanyMaximumPower.add(company_uuid, 0.0)
+    Components.CompanyTotalDeliveredPowerEfficiency.add(company_uuid, 0.0)
 
     # Comparative values over time
     Components.CompanyChangeInTotalDeliveredPower.add(company_uuid, 0.0)
@@ -95,6 +96,7 @@ defmodule Sunburn.Manager do
   # Declare all valid Component types
   def components do
     [
+      Components.CompanyTotalDeliveredPowerEfficiency,
       Components.CompanyChangeInTotalDeliveredPower,
       Components.CompanyTotalDeliveredPower,
       Components.CompanyMaximumPower,
