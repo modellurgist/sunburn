@@ -27,7 +27,6 @@ defmodule Sunburn.Systems.DaySampler do
   def run do
     # over all companies, collect company data
     for {company_uuid, _power} <- CompanyTotalDeliveredPower.get_all() do
-
       # over all sites at company, collect site data
       sites_data =
         for site_uuid <- SiteCompany.search(company_uuid) do
@@ -81,12 +80,16 @@ defmodule Sunburn.Systems.DaySampler do
   end
 
   defp aggregate_sites_for_company(company_uuid, sites_data) do
-    previous_delivered_power = CompanyTotalDeliveredPower.get(company_uuid) |> Decimal.from_float()
+    previous_delivered_power =
+      CompanyTotalDeliveredPower.get(company_uuid) |> Decimal.from_float()
+
     previous_maximum_power = CompanyMaximumPower.get(company_uuid) |> Decimal.from_float()
 
-    current_delivered_power = Enum.map(sites_data, & &1.delivered_power) |> Enum.sum() |> Decimal.from_float()
+    current_delivered_power =
+      Enum.map(sites_data, & &1.delivered_power) |> Enum.sum() |> Decimal.from_float()
 
-    current_maximum_power = Enum.map(sites_data, & &1.maximum_power) |> Enum.sum() |> Decimal.from_float()
+    current_maximum_power =
+      Enum.map(sites_data, & &1.maximum_power) |> Enum.sum() |> Decimal.from_float()
 
     denominator = Decimal.sub(current_maximum_power, previous_maximum_power)
 
@@ -100,7 +103,6 @@ defmodule Sunburn.Systems.DaySampler do
         )
         |> Decimal.round(2)
       end
-
 
     data =
       %{
