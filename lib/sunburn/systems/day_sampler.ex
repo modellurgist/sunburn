@@ -5,6 +5,7 @@ defmodule Sunburn.Systems.DaySampler do
   @behaviour ECSx.System
 
   alias Sunburn.Components.{
+    SimulationTickCount,
     CompanyTotalDeliveredPower,
     CompanyMaximumPower,
     CompanyChangeInTotalDeliveredPower,
@@ -26,6 +27,9 @@ defmodule Sunburn.Systems.DaySampler do
   @impl ECSx.System
   @doc "Triggered at each tick of simulation"
   def run do
+    # Update tick count
+    increment_tick_count()
+
     # over all companies, collect company data
     for {company_uuid, _power} <- CompanyTotalDeliveredPower.get_all() do
       # over all sites at company, collect site data
@@ -50,11 +54,23 @@ defmodule Sunburn.Systems.DaySampler do
     :ok
   end
 
+  defp increment_tick_count do
+    {sim_uuid, previous_count} = previous_tick_count()
+    new_count = previous_count + 1
+
+    SimulationTickCount.update(sim_uuid, new_count)
+  end
+
+  defp previous_tick_count do
+    [{sim_uuid, count}] = SimulationTickCount.get_all()
+    {sim_uuid, count}
+  end
+
   defp sample_panel(panel_uuid, site_radiation) do
     capacity_nominal = PanelPowerCapacity.get(panel_uuid, 0.0)
     capacity_actual = capacity_nominal * site_radiation
 
-    random_loss = :rand.normal(4.0, 3.5)
+    random_loss = :rand.normal(4.0, 20.0) / 100
     panel_losses = if random_loss > 0.0, do: random_loss, else: 0.0
 
     delivered_actual = capacity_actual * (1.0 - panel_losses)
@@ -98,6 +114,7 @@ defmodule Sunburn.Systems.DaySampler do
       else
         current_delivered_power
         |> Decimal.div(current_maximum_power)
+        |> Decimal.mult(100)
       end
 
     data =

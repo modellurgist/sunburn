@@ -17,6 +17,9 @@ defmodule Sunburn.Manager do
   ]
 
   def startup do
+    simulation_uuid = Ecto.UUID.generate()
+    Components.SimulationTickCount.add(simulation_uuid, 0)
+
     # Load ephemeral components during first server start and again
     # on every subsequent app restart
 
@@ -96,6 +99,7 @@ defmodule Sunburn.Manager do
   # Declare all valid Component types
   def components do
     [
+      Sunburn.Components.SimulationTickCount,
       Components.CompanyTotalDeliveredPowerEfficiency,
       Components.CompanyChangeInTotalDeliveredPower,
       Components.CompanyTotalDeliveredPower,

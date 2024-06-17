@@ -40,7 +40,7 @@ config :logger, :console,
 config :phoenix, :json_library, Jason
 
 config :ecsx,
-  tick_rate: 20,
+  tick_rate: 1,
   manager: Sunburn.Manager
 
 # Import environment specific config. This must remain at the bottom

@@ -56,6 +56,7 @@ defmodule Sunburn.MixProject do
       {:swoosh, "~> 1.5"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
+      {:timex, "~> 3.0"},
       # dev / test
       {:floki, ">= 0.30.0", only: :test},
       {:phoenix_live_reload, "~> 1.2", only: :dev}
