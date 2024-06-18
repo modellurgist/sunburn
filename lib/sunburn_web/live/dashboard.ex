@@ -1,10 +1,17 @@
 defmodule SunburnWeb.Dashboard do
   use SunburnWeb, :live_view
 
+  alias SunburnWeb.ExpandableTable
   alias SunburnWeb.StatsCard
 
   alias Sunburn.Components.{
+    PanelSite,
     SimulationTickCount,
+    SiteCompany,
+    SiteMaximumPower,
+    SiteTotalDeliveredPower,
+    PanelPowerCapacity,
+    PanelTotalDeliveredPower,
     CompanyChangeInTotalDeliveredPower,
     CompanyTotalDeliveredPowerEfficiency
   }
@@ -37,17 +44,30 @@ defmodule SunburnWeb.Dashboard do
     ~H"""
     <div class="text-center text-xl font-bold"><%= @current_simulation_datetime %></div>
 
-    <div class="mt-4 w-full grid grid-cols-11">
+    <div class="mt-4 w-full grid grid-flow-col grid-cols-11">
       <div class="col-start-5 col-span-3">
-        <StatsCard.component
-          headline="Power Delivery Efficiency"
-          status={@delivered_power_status}
-          value={@delivered_power_efficiency}
-          value_units="%"
-          change_direction={@delivered_power_change_direction}
-          change_value={@delivered_power_change}
-          change_units="kWh/d"
-        />
+        <div class="">
+          <StatsCard.component
+            headline="Power Delivery Efficiency"
+            status={@delivered_power_status}
+            value={@delivered_power_efficiency}
+            value_units="%"
+            change_direction={@delivered_power_change_direction}
+            change_value={@delivered_power_change}
+            change_units="kWh/d"
+          />
+        </div>
+      </div>
+
+      <div class="col-start-4 col-span-5">
+        <div class="mt-10">
+          <ExpandableTable.component
+            header={true}
+            header_entity_type={"Site"}
+            entity_identifier={"something"}
+            sites={@sites}
+          />
+        </div>
       </div>
     </div>
     """
@@ -68,9 +88,45 @@ defmodule SunburnWeb.Dashboard do
 
   defp resample(socket) do
     socket
+    |> assign_site_network_values()
     |> assign_current_simulation_tick()
     |> assign_simulated_datetime()
     |> assign_resampled_company_stats()
+  end
+
+  def round_float(number, digits \\ 1) when is_float(number) do
+    number
+    |> Decimal.from_float()
+    |> Decimal.round(digits)
+    |> Decimal.to_float()
+  end
+
+  defp assign_site_network_values(socket) do
+    sites =
+      Enum.map(SiteCompany.get_all(), fn {site, _company} ->
+        %{
+          id: site,
+          delivered_power: SiteTotalDeliveredPower.get(site) |> round_float(),
+          maximum_power: SiteMaximumPower.get(site) |> round_float()
+        }
+      end)
+
+    sites =
+      for site <- sites do
+        panels =
+          PanelSite.search(site.id)
+          |> Enum.map(fn panel ->
+            %{
+              id: panel,
+              delivered_power: PanelTotalDeliveredPower.get(panel) |> round_float(2),
+              maximum_power: PanelPowerCapacity.get(panel) |> round_float(2)
+            }
+          end)
+
+        Map.put(site, :panels, panels)
+      end
+
+    socket |> assign(:sites, sites)
   end
 
   defp assign_simulated_datetime(%{assigns: assigns} = socket) do
@@ -85,8 +141,8 @@ defmodule SunburnWeb.Dashboard do
   defp assign_resampled_company_stats(socket) do
     company_uuid = socket.assigns.company_uuid
 
-    power_efficiency = CompanyTotalDeliveredPowerEfficiency.get(company_uuid)
-    power_change = CompanyChangeInTotalDeliveredPower.get(company_uuid)
+    power_efficiency = CompanyTotalDeliveredPowerEfficiency.get(company_uuid) |> round_float()
+    power_change = CompanyChangeInTotalDeliveredPower.get(company_uuid) |> round_float()
     power_change_direction = if power_change >= 0, do: :positive, else: :negative
 
     delivered_power_status = if power_efficiency >= 95.0, do: :good, else: :bad
