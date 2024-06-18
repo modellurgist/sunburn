@@ -63,8 +63,8 @@ defmodule SunburnWeb.Dashboard do
         <div class="mt-10">
           <ExpandableTable.component
             header={true}
-            header_entity_type={"Site"}
-            entity_identifier={"something"}
+            header_entity_type="Site"
+            entity_identifier="something"
             sites={@sites}
           />
         </div>

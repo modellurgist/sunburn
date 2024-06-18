@@ -122,7 +122,8 @@ defmodule Sunburn.Systems.DaySampler do
         maximum_power: current_maximum_power |> Decimal.round(2) |> Decimal.to_float(),
         delivered_power: current_delivered_power |> Decimal.round(2) |> Decimal.to_float(),
         delivered_power_change: delivered_power_change |> Decimal.round(2) |> Decimal.to_float(),
-        delivered_power_efficiency: delivered_power_efficiency |> Decimal.round(2) |> Decimal.to_float()
+        delivered_power_efficiency:
+          delivered_power_efficiency |> Decimal.round(2) |> Decimal.to_float()
       }
 
     CompanyTotalDeliveredPower.update(company_uuid, data.delivered_power)

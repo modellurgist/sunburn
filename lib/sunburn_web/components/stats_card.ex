@@ -15,7 +15,8 @@ defmodule SunburnWeb.StatsCard do
     ~H"""
     <div class="flex flex-col gap-y-3 lg:gap-y-5 p-4 md:p-5 bg-white border shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-800">
       <div class="inline-flex justify-center items-center">
-        <span class={"size-3 inline-block rounded-full me-2 " <> (if @status == :good, do: "bg-green-500", else: "bg-red-500")}></span>
+        <span class={"size-3 inline-block rounded-full me-2 " <> (if @status == :good, do: "bg-green-500", else: "bg-red-500")}>
+        </span>
         <span class="text-base font-semibold uppercase text-gray-600 dark:text-neutral-400">
           <%= @headline %>
         </span>
